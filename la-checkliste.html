@@ -1,0 +1,494 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lineare Algebra – Aufgabenübersicht</title>
+<style>
+  :root{
+    --paper:#EAEEF3;
+    --card:#FFFFFF;
+    --ink:#0E1726;
+    --muted:#6B7A90;
+    --line:#D3DAE4;
+    --t:#3070B3;
+    --h:#9C3A6B;
+    --p:#B0812A;
+    --done:#0E7C6B;
+    --done-bg:#E4F2EF;
+    --skip:#96702A;
+    --skip-bg:#F6F1E6;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(to right, rgba(48,112,179,.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(48,112,179,.07) 1px, transparent 1px);
+    background-size:26px 26px;
+    color:var(--ink);
+    font-family:"Inter","Helvetica Neue",Arial,sans-serif;
+    font-size:15px;line-height:1.45;padding:28px 18px 64px;
+  }
+  .wrap{max-width:980px;margin:0 auto}
+
+  header{margin-bottom:26px}
+  .eyebrow{
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:6px;
+  }
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:34px;
+     line-height:1.1;margin:0 0 2px;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--t)}
+  .sub{color:var(--muted);font-size:13.5px;margin-bottom:20px}
+
+  .meter{
+    background:var(--card);border:1px solid var(--line);border-radius:3px 3px 0 0;
+    padding:14px 16px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+  }
+  .count{font-family:Georgia,serif;font-size:26px;line-height:1;white-space:nowrap}
+  .count small{font-size:14px;color:var(--muted);font-family:inherit}
+  .bar{flex:1 1 200px;height:6px;background:#E6EAF0;border-radius:99px;overflow:hidden;
+       min-width:140px;display:flex}
+  .bar i{display:block;height:100%;width:0;transition:width .35s ease}
+  #fill{background:var(--done)}
+  #fillSkip{background:var(--skip);opacity:.5}
+  .split{display:flex;gap:14px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+  .split b{color:var(--ink);font-weight:600}
+
+  .bank{
+    background:#F7F9FB;border:1px solid var(--line);border-top:none;border-radius:0 0 3px 3px;
+    padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;
+  }
+  .state{display:flex;align-items:center;gap:7px;color:var(--muted)}
+  .state .dot{width:8px;height:8px;border-radius:99px;background:var(--muted)}
+  .state.ok .dot{background:var(--done)}
+  .state.ok{color:var(--done)}
+  .state.warn .dot{background:var(--p)}
+  .state.warn{color:#8A6520}
+  #code{
+    flex:1 1 150px;min-width:110px;font-family:ui-monospace,Menlo,monospace;font-size:12px;
+    padding:5px 8px;border:1px solid var(--line);border-radius:3px;background:#fff;color:var(--ink);
+  }
+  .mini{
+    background:none;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12.5px;
+    padding:5px 11px;border-radius:3px;cursor:pointer;white-space:nowrap;
+  }
+  .mini:hover{border-color:var(--muted);color:var(--ink)}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:16px 2px 4px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend .dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .hint{font-size:12.5px;color:var(--muted);margin:0 2px 12px;line-height:1.6}
+  .hint b{font-weight:600;color:var(--ink)}
+
+  .matrix{position:relative;padding:0 22px}
+  .matrix::before,.matrix::after{
+    content:"";position:absolute;top:0;bottom:0;width:12px;border:2px solid var(--ink);opacity:.55;
+  }
+  .matrix::before{left:0;border-right:none}
+  .matrix::after{right:0;border-left:none}
+
+  .blatt{background:var(--card);border:1px solid var(--line);border-radius:3px;
+         padding:12px 14px 14px;margin-bottom:10px}
+  .bhead{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  .bnum{font-family:Georgia,serif;font-size:17px}
+  .bdate{font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+  .bcount{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted)}
+  .blatt.full .bcount{color:var(--done)}
+
+  .cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px}
+  .cell{
+    display:grid;grid-template-columns:1fr auto;align-items:stretch;
+    background:#FBFCFD;border:1px solid var(--line);border-left:3px solid var(--type);
+    border-radius:2px;overflow:hidden;transition:background .15s,border-color .15s;
+  }
+  .main{
+    display:flex;align-items:flex-start;gap:9px;text-align:left;background:none;border:none;
+    padding:8px 6px 8px 10px;font:inherit;color:inherit;cursor:pointer;min-width:0;
+  }
+  .main:hover{background:rgba(48,112,179,.05)}
+  .tools{display:flex;border-left:1px solid var(--line)}
+  .tool{
+    background:none;border:none;color:#B6BFCC;font-size:13px;line-height:1;padding:0 8px;
+    cursor:pointer;transition:color .15s,background .15s;
+  }
+  .tool + .tool{border-left:1px solid var(--line)}
+  .tool:hover{background:rgba(14,23,38,.05);color:var(--ink)}
+  .main:focus-visible,.tool:focus-visible{outline:2px solid var(--t);outline-offset:-2px}
+  .cell.hasnote .tnote{color:var(--t)}
+  .cell.skipped .tskip{color:var(--skip)}
+
+  .box{flex:none;width:15px;height:15px;margin-top:2px;border:1.5px solid var(--line);
+       border-radius:2px;background:#fff;position:relative}
+  .txt{min-width:0}
+  .code{display:block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;
+        letter-spacing:.06em;color:var(--type);font-weight:600}
+  .name{display:block;font-size:13px;line-height:1.3;margin-top:1px}
+
+  .note{
+    grid-column:1 / -1;display:none;width:100%;border:none;border-top:1px dashed var(--line);
+    background:#F6F9FC;font:inherit;font-size:12.5px;color:#3F4B5C;padding:6px 10px;resize:vertical;
+    min-height:32px;font-family:inherit;
+  }
+  .note::placeholder{color:#A9B4C2}
+  .note:focus{outline:none;background:#EEF4FA}
+  .cell.noting .note{display:block}
+
+  .cell.done{background:var(--done-bg);border-color:#BFE0D9;border-left-color:var(--done)}
+  .cell.done .box{background:var(--done);border-color:var(--done)}
+  .cell.done .box::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg)}
+  .cell.done .name{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+  .cell.done .note{background:#EDF6F4;border-top-color:#C9E3DD}
+
+  .cell.skipped{background:var(--skip-bg);border-color:#E2D5B7;border-left-style:dashed;
+                border-left-color:var(--skip)}
+  .cell.skipped .box{border-color:var(--skip);border-style:dashed;background:#fff}
+  .cell.skipped .box::after{content:"";position:absolute;left:1px;top:5px;width:9px;height:1.5px;
+    background:var(--skip)}
+  .cell.skipped .name{color:#8A7748;font-style:italic}
+  .cell.skipped .note{background:#FBF7EC;border-top-color:#E2D5B7;color:#6B5A32}
+
+  footer{margin-top:22px;font-size:12px;color:var(--muted);text-align:center}
+
+  @media (max-width:520px){
+    body{padding:20px 12px 48px}
+    h1{font-size:26px}
+    .matrix{padding:0 14px}
+    .matrix::before,.matrix::after{width:8px}
+    .cells{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media print{
+    body{background:#fff;padding:0}
+    .bank,.mini,.tools{display:none}
+    .blatt{break-inside:avoid}
+    .cell.hasnote .note{display:block!important;border-top:1px solid #ddd}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">TUM · SoSe 2026 · Wiese / Reimers</div>
+    <h1>Lineare Algebra <em>für Informatik</em></h1>
+    <div class="sub">Blatt 1 bis 13</div>
+
+    <div class="meter">
+      <div class="count"><span id="done">0</span><small> / 90 abgeschlossen</small></div>
+      <div class="bar"><i id="fill"></i><i id="fillSkip"></i></div>
+      <div class="split">
+        <span>Tutor <b id="ct">0/38</b></span>
+        <span>Haus <b id="ch">0/46</b></span>
+        <span>Progr. <b id="cp">0/6</b></span>
+        <span>davon erledigt <b id="cd">0</b></span>
+        <span>übersprungen <b id="cs">0</b></span>
+      </div>
+    </div>
+
+    <div class="bank">
+      <span class="state" id="state"><i class="dot"></i><span id="stateTxt">Prüfe Speicher …</span></span>
+      <input id="code" spellcheck="false" aria-label="Sicherungscode">
+      <button class="mini" id="btnCopy">Code kopieren</button>
+      <button class="mini" id="btnLoad">Code laden</button>
+      <button class="mini" id="btnFile">Als Datei sichern</button>
+      <button class="mini" id="btnReset">Zurücksetzen</button>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot" style="background:#3070B3"></i>Tutoraufgabe</span>
+      <span><i class="dot" style="background:#9C3A6B"></i>Hausaufgabe</span>
+      <span><i class="dot" style="background:#B0812A"></i>Programmieraufgabe</span>
+    </div>
+    <div class="hint">
+      Klick auf die Aufgabe = <b>erledigt</b> · <b>✎</b> = <b>Notiz</b> auf- und zuklappen · <b>⊘</b> = <b>übersprungen</b>.
+    </div>
+  </header>
+
+  <div class="matrix" id="matrix"></div>
+
+  <footer>90 Aufgaben insgesamt · T 1–38 · H 1–46 · P 1–6</footer>
+</div>
+
+<script>
+const KEY = "la-checkliste-v1";
+const SAVED = "";
+
+const BLAETTER = [
+ ["1","20.4.–24.4.",[["T","1","Rechnen mit Matrizen"],["T","2","Formeln"],["T","3","Netzwerk"],["H","1","Spezielle Produkte"],["H","2","Nichtnegative/Positive Matrizen"],["H","3","Produktionsprozess"],["P","1","Matrixmultiplikation"]]],
+ ["2","27.4.–30.4.",[["T","4","Lineares Gleichungssystem"],["T","5","Kleines LGS mit Parameter"],["T","6","Struktur der Lösungsmenge"],["H","4","Lineares Gleichungssystem"],["H","5","LGS mit Parameter"],["H","6","Elementare Umformungen"],["P","2","Gauß-Algorithmus"]]],
+ ["3","4.5.–8.5.",[["T","7","LGS über endlichem Körper"],["T","8","Rang über ℂ"],["T","9","Untervektorräume"],["H","7","Komplexe Zahlen"],["H","8","LGS über ℂ"],["H","9","Untervektorräume"],["H","10","Verschiedene Körper"]]],
+ ["4","11.5.–15.5.",[["T","10","Linearkombinationen"],["T","11","Wahr oder falsch?"],["T","12","Linear unabhängige Funktionen"],["H","11","Schnitt von Unterräumen"],["H","12","Wahr oder falsch?"],["H","13","Erzeugte Unterräume mit Polynomen"],["H","14","Vereinigungen von Unterräumen"]]],
+ ["5","18.5.–22.5.",[["T","13","Basis des Lösungsraums"],["T","14","Polynome"],["T","15","Dimensionsformel"],["H","15","Dimension des Schnitts"],["H","16","Basis eines Unterraums"],["H","17","Linear unabhängige Mengen"],["H","18","Lagrange-Interpolation"]]],
+ ["6","27.5.–29.5.",[["T","16","Linear oder nicht?"],["T","17","Bild eines Unterraums"],["T","18","Codierungstheorie"],["H","19","Codierungstheorie"],["H","20","Hamming-Abstand"],["H","21","Drehungen, Spiegelungen, …"],["P","3","Hamming-Code"]]],
+ ["7","1.6.–5.6.",[["T","19","Kern und Bild"],["T","20","Kern = Bild"],["T","21","Linear unabhängig und injektiv"],["H","22","Kern und Bild"],["H","23","Kern und Bild als Komplementärräume"],["H","24","Linear unabhängig und surjektiv"],["H","25","Lineare Fortsetzung"]]],
+ ["8","8.6.–12.6.",[["T","22","Darstellungsmatrix, Kern und Bild"],["T","23","Darstellungsmatrix und Komposition"],["T","24","Inverse einer 2×2-Matrix"],["H","26","Invertierbar"],["H","27","Darstellungsmatrix"],["H","28","Beispiele"],["P","4","Inverse berechnen"]]],
+ ["9","15.6.–19.6.",[["T","25","Darstellungsmatrizen und Matrixprodukt"],["T","26","Basiswechsel"],["H","29","Basiswechselmatrizen"],["H","30","Obere Dreiecksmatrizen"],["H","31","Spiegelung an einer Geraden im ℝ²"]]],
+ ["10","22.6.–26.6.",[["T","27","Determinanten, Teil 1"],["T","28","Determinanten, Teil 2"],["T","29","Fläche eines Parallelogramms"],["H","32","Invertierbar"],["H","33","4×4-Determinanten"],["H","34","Beweis oder Beispiel?"],["H","35","Eigenschaften von Matrizen"],["P","5","Determinante"]]],
+ ["11","29.6.–3.7.",[["T","30","Eigenvektoren"],["T","31","Eigenwerte der Inversen"],["T","32","Charakteristisches Polynom"],["H","36","Eigenwerte und Eigenräume"],["H","37","Die Spur"],["H","38","Linearfaktoren"],["H","39","Einsetzen in Polynome"]]],
+ ["12","6.7.–10.7.",[["T","33","Diagonalisieren"],["T","34","Anwendung vom Diagonalisieren"],["T","35","Fibonacci-Folge"],["H","40","Diagonalisierbar"],["H","41","Rekursive Folge"],["H","42","Stochastische Matrizen"],["P","6","Vektoriteration"]]],
+ ["13","13.7.–17.7.",[["T","36","Orthogonale Projektion auf eine Gerade"],["T","37","Gram-Schmidt-Verfahren"],["T","38","Summe und Differenz"],["H","43","Analytische Geometrie im ℝ³"],["H","44","Das Kreuzprodukt im ℝ³"],["H","45","Symmetrische Matrix"],["H","46","Orthogonale Matrizen"]]]
+];
+
+const COLOR = {T:"var(--t)", H:"var(--h)", P:"var(--p)"};
+const ALL = [];
+BLAETTER.forEach(function(b){ b[2].forEach(function(a){ ALL.push(a[0] + a[1]); }); });
+
+/* d = erledigt · s = übersprungen · n = Notiz (unabhängig vom Zustand) */
+let model = {d:{}, s:{}, n:{}};
+let open = {};          /* nur Ansicht: welche Notizfelder sind aufgeklappt */
+let backend = "none";
+
+function b64enc(str){ return btoa(unescape(encodeURIComponent(str))).replace(/=+$/, ""); }
+function b64dec(str){ return decodeURIComponent(escape(atob(str))); }
+
+function encode(){ return b64enc(JSON.stringify(model)); }
+
+function decode(code){
+  const clean = code.trim().replace(/[^A-Za-z0-9+/=]/g, "");
+  const raw = b64dec(clean);
+  if(raw.charAt(0) === "{"){
+    const o = JSON.parse(raw);
+    const m = {d: o.d || {}, s: {}, n: o.n || {}};
+    Object.keys(o.s || {}).forEach(function(id){
+      m.s[id] = true;
+      /* Vorversion: Notiz steckte im s-Wert */
+      if(typeof o.s[id] === "string" && o.s[id] && !m.n[id]) m.n[id] = o.s[id];
+    });
+    return m;
+  }
+  const bin = atob(clean);
+  let bits = "";
+  for(let i = 0; i < bin.length; i++) bits += bin.charCodeAt(i).toString(2).padStart(8, "0");
+  const d = {};
+  ALL.forEach(function(id, i){ if(bits[i] === "1") d[id] = true; });
+  return {d:d, s:{}, n:{}};
+}
+
+function isEmpty(m){
+  return !Object.keys(m.d).length && !Object.keys(m.s).length && !Object.keys(m.n).length;
+}
+
+async function save(){
+  const code = encode();
+  document.getElementById("code").value = code;
+  try { history.replaceState(null, "", "#" + code); } catch(e){ try { location.hash = code; } catch(e2){} }
+  let ok = false;
+  try { if(window.storage){ await window.storage.set(KEY, code); ok = true; backend = "app"; } } catch(e){}
+  if(!ok){ try { localStorage.setItem(KEY, code); ok = true; backend = "browser"; } catch(e){} }
+  if(!ok) backend = "none";
+  showState();
+}
+
+async function load(){
+  const fromHash = location.hash.slice(1);
+  if(fromHash){ try { model = decode(fromHash); backend = "link"; } catch(e){} }
+  if(isEmpty(model)){
+    try {
+      if(window.storage){
+        const r = await window.storage.get(KEY);
+        if(r && r.value){ model = decode(r.value); backend = "app"; return; }
+      }
+    } catch(e){}
+    try {
+      const v = localStorage.getItem(KEY);
+      if(v){ model = decode(v); backend = "browser"; return; }
+    } catch(e){}
+  }
+  if(isEmpty(model) && SAVED){ try { model = decode(SAVED); backend = "datei"; } catch(e){} }
+  try {
+    localStorage.setItem("__probe", "1"); localStorage.removeItem("__probe");
+    if(backend === "none" || backend === "datei" || backend === "link") backend = "browser";
+  } catch(e){ if(backend !== "app") backend = "none"; }
+}
+
+function showState(){
+  const el = document.getElementById("state");
+  const txt = document.getElementById("stateTxt");
+  el.className = "state";
+  if(backend === "app" || backend === "browser"){
+    el.classList.add("ok"); txt.textContent = "Automatisch gespeichert";
+  } else {
+    el.classList.add("warn"); txt.textContent = "Kein Speicher — Datei sichern";
+  }
+}
+
+function render(){
+  const root = document.getElementById("matrix");
+  root.innerHTML = "";
+  BLAETTER.forEach(function(entry){
+    const nr = entry[0], datum = entry[1], aufgaben = entry[2];
+    const sec = document.createElement("section");
+    sec.className = "blatt";
+    const head = document.createElement("div");
+    head.className = "bhead";
+    head.innerHTML = '<span class="bnum">Blatt ' + nr + '</span>' +
+                     '<span class="bdate">' + datum + '</span>' +
+                     '<span class="bcount"></span>';
+    sec.appendChild(head);
+
+    const grid = document.createElement("div");
+    grid.className = "cells";
+    aufgaben.forEach(function(a){
+      const typ = a[0], num = a[1], titel = a[2], id = typ + num;
+
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.dataset.id = id;
+      cell.dataset.typ = typ;
+      cell.style.setProperty("--type", COLOR[typ]);
+
+      const main = document.createElement("button");
+      main.className = "main";
+      main.type = "button";
+      main.innerHTML = '<span class="box"></span><span class="txt">' +
+                       '<span class="code">' + typ + ' ' + num + '</span>' +
+                       '<span class="name"></span></span>';
+      main.querySelector(".name").textContent = titel;
+      main.addEventListener("click", function(){
+        if(model.d[id]){ delete model.d[id]; }
+        else { model.d[id] = true; delete model.s[id]; }
+        paint(); save();
+      });
+
+      const tools = document.createElement("div");
+      tools.className = "tools";
+
+      const tnote = document.createElement("button");
+      tnote.className = "tool tnote";
+      tnote.type = "button";
+      tnote.textContent = "✎";
+      tnote.title = "Notiz";
+      tnote.setAttribute("aria-label", "Notiz zu " + typ + " " + num);
+      tnote.addEventListener("click", function(){
+        open[id] = !open[id];
+        paint();
+        if(open[id]) cell.querySelector(".note").focus();
+      });
+
+      const tskip = document.createElement("button");
+      tskip.className = "tool tskip";
+      tskip.type = "button";
+      tskip.textContent = "⊘";
+      tskip.title = "Übersprungen";
+      tskip.setAttribute("aria-label", typ + " " + num + " überspringen");
+      tskip.addEventListener("click", function(){
+        if(model.s[id]){ delete model.s[id]; }
+        else { model.s[id] = true; delete model.d[id]; }
+        paint(); save();
+      });
+
+      tools.appendChild(tnote);
+      tools.appendChild(tskip);
+
+      const note = document.createElement("textarea");
+      note.className = "note";
+      note.rows = 1;
+      note.placeholder = "Notiz …";
+      note.setAttribute("aria-label", "Notiz zu " + typ + " " + num);
+      note.addEventListener("input", function(){
+        if(note.value) model.n[id] = note.value; else delete model.n[id];
+        markNote(cell, id);
+        counters();
+      });
+      note.addEventListener("change", save);
+      note.addEventListener("blur", function(){ open[id] = false; paint(); save(); });
+
+      cell.appendChild(main);
+      cell.appendChild(tools);
+      cell.appendChild(note);
+      grid.appendChild(cell);
+    });
+    sec.appendChild(grid);
+    root.appendChild(sec);
+  });
+  paint();
+}
+
+function markNote(cell, id){
+  cell.classList.toggle("hasnote", !!model.n[id]);
+  cell.classList.toggle("noting", !!open[id] || !!model.n[id]);
+}
+
+function paint(){
+  document.querySelectorAll(".cell").forEach(function(c){
+    const id = c.dataset.id;
+    const d = !!model.d[id], s = !!model.s[id];
+    c.classList.toggle("done", d);
+    c.classList.toggle("skipped", s);
+    c.querySelector(".main").setAttribute("aria-pressed", d ? "true" : "false");
+    c.querySelector(".tskip").setAttribute("aria-pressed", s ? "true" : "false");
+    const note = c.querySelector(".note");
+    const val = model.n[id] || "";
+    if(note.value !== val && document.activeElement !== note) note.value = val;
+    markNote(c, id);
+  });
+  counters();
+  document.getElementById("code").value = encode();
+}
+
+function counters(){
+  const tot = {T:38, H:46, P:6};
+  const got = {T:0, H:0, P:0};
+  let doneN = 0, skipped = 0, notes = 0;
+  document.querySelectorAll(".cell").forEach(function(c){
+    const id = c.dataset.id;
+    const d = !!model.d[id], s = !!model.s[id];
+    if(d || s) got[c.dataset.typ]++;   /* übersprungene zählen mit */
+    if(d) doneN++;
+    if(s) skipped++;
+    if(model.n[id]) notes++;
+  });
+  const sum = got.T + got.H + got.P;
+  document.getElementById("done").textContent = sum;
+  document.getElementById("cd").textContent = doneN;
+  document.getElementById("fill").style.width = (doneN / 90 * 100) + "%";
+  document.getElementById("fillSkip").style.width = (skipped / 90 * 100) + "%";
+  document.getElementById("ct").textContent = got.T + "/" + tot.T;
+  document.getElementById("ch").textContent = got.H + "/" + tot.H;
+  document.getElementById("cp").textContent = got.P + "/" + tot.P;
+  document.getElementById("cs").textContent = skipped;
+
+  document.querySelectorAll(".blatt").forEach(function(sec){
+    const cells = sec.querySelectorAll(".cell");
+    let n = 0, sk = 0;
+    cells.forEach(function(c){
+      if(model.d[c.dataset.id]) n++;
+      if(model.s[c.dataset.id]) sk++;
+    });
+    sec.querySelector(".bcount").textContent = (n + sk) + " / " + cells.length + (sk ? "  ⊘ " + sk : "");
+    sec.classList.toggle("full", n + sk === cells.length);
+  });
+}
+
+document.getElementById("btnReset").addEventListener("click", function(){
+  model = {d:{}, s:{}, n:{}}; open = {}; paint(); save();
+});
+document.getElementById("btnCopy").addEventListener("click", function(){
+  const inp = document.getElementById("code");
+  inp.select();
+  try { navigator.clipboard.writeText(inp.value); } catch(e){ try { document.execCommand("copy"); } catch(e2){} }
+  const b = document.getElementById("btnCopy");
+  b.textContent = "Kopiert";
+  setTimeout(function(){ b.textContent = "Code kopieren"; }, 1400);
+});
+document.getElementById("btnLoad").addEventListener("click", function(){
+  try { model = decode(document.getElementById("code").value); open = {}; paint(); save(); }
+  catch(e){ document.getElementById("stateTxt").textContent = "Code nicht lesbar"; }
+});
+document.getElementById("btnFile").addEventListener("click", function(){
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelector("#matrix").innerHTML = "";
+  clone.querySelector("#code").setAttribute("value", "");
+  let html = "<!doctype html>\n" + clone.outerHTML;
+  html = html.replace(new RegExp('const SAVED = "[^"]*";'), 'const SAVED = "' + encode() + '";');
+  const url = URL.createObjectURL(new Blob([html], {type:"text/html"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = "la-checkliste.html"; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  const b = document.getElementById("btnFile");
+  b.textContent = "Datei erstellt";
+  setTimeout(function(){ b.textContent = "Als Datei sichern"; }, 1800);
+});
+
+load().then(function(){ render(); showState(); });
+</script>
