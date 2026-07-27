@@ -1,0 +1,698 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IN0019 Numerisches Programmieren</title>
+<style>
+  :root{
+    --paper:#EAEEF3;
+    --card:#FFFFFF;
+    --ink:#0E1726;
+    --muted:#6B7A90;
+    --line:#D3DAE4;
+    --ss:#3070B3;
+    --ws:#6A4C93;
+    --done:#0E7C6B;
+    --done-bg:#E4F2EF;
+    --skip:#96702A;
+    --skip-bg:#F6F1E6;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    background-image:
+      linear-gradient(to right, rgba(48,112,179,.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(48,112,179,.07) 1px, transparent 1px);
+    background-size:26px 26px;
+    color:var(--ink);
+    font-family:"Inter","Helvetica Neue",Arial,sans-serif;
+    font-size:15px;line-height:1.45;padding:28px 18px 64px;
+  }
+  .wrap{max-width:980px;margin:0 auto}
+
+  header{margin-bottom:26px}
+  .eyebrow{
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:6px;
+  }
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:34px;
+     line-height:1.1;margin:0 0 2px;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--ss)}
+  .sub{color:var(--muted);font-size:13.5px;margin-bottom:20px}
+
+  .meter{
+    background:var(--card);border:1px solid var(--line);border-radius:3px 3px 0 0;
+    padding:14px 16px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+  }
+  .count{font-family:Georgia,serif;font-size:26px;line-height:1;white-space:nowrap}
+  .count small{font-size:14px;color:var(--muted);font-family:inherit}
+  .bar{flex:1 1 200px;height:6px;background:#E6EAF0;border-radius:99px;overflow:hidden;
+       min-width:140px;display:flex}
+  .bar i{display:block;height:100%;width:0;transition:width .35s ease}
+  #fill{background:var(--done)}
+  #fillSkip{background:var(--skip);opacity:.5}
+  .split{display:flex;gap:14px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+  .split b{color:var(--ink);font-weight:600}
+
+  .bank{
+    background:#F7F9FB;border:1px solid var(--line);border-top:none;border-radius:0 0 3px 3px;
+    padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;
+  }
+  .state{display:flex;align-items:center;gap:7px;color:var(--muted)}
+  .state .dot{width:8px;height:8px;border-radius:99px;background:var(--muted)}
+  .state.ok .dot{background:var(--done)}
+  .state.ok{color:var(--done)}
+  .state.warn .dot{background:var(--skip)}
+  .state.warn{color:#8A6520}
+  #code{
+    flex:1 1 150px;min-width:110px;font-family:ui-monospace,Menlo,monospace;font-size:12px;
+    padding:5px 8px;border:1px solid var(--line);border-radius:3px;background:#fff;color:var(--ink);
+  }
+  .mini{
+    background:none;border:1px solid var(--line);color:var(--muted);font:inherit;font-size:12.5px;
+    padding:5px 11px;border-radius:3px;cursor:pointer;white-space:nowrap;
+  }
+  .mini:hover{border-color:var(--muted);color:var(--ink)}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:16px 2px 4px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend .dot{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .hint{font-size:12.5px;color:var(--muted);margin:0 2px 12px;line-height:1.6}
+  .hint b{font-weight:600;color:var(--ink)}
+  .section-title{
+    font-family:Georgia,serif;font-size:20px;margin:26px 2px 10px;color:var(--ink);
+  }
+
+  .matrix{position:relative;padding:0 22px}
+  .matrix::before,.matrix::after{
+    content:"";position:absolute;top:0;bottom:0;width:12px;border:2px solid var(--ink);opacity:.55;
+  }
+  .matrix::before{left:0;border-right:none}
+  .matrix::after{right:0;border-left:none}
+
+  .blatt{background:var(--card);border:1px solid var(--line);border-radius:3px;
+         padding:12px 14px 14px;margin-bottom:10px}
+  .bhead{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  .bnum{font-family:Georgia,serif;font-size:17px}
+  .bcount{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted)}
+  .blatt.full .bcount{color:var(--done)}
+
+  .cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px}
+  .cell{
+    display:grid;grid-template-columns:1fr auto;align-items:stretch;
+    background:#FBFCFD;border:1px solid var(--line);border-left:3px solid var(--type);
+    border-radius:2px;overflow:hidden;transition:background .15s,border-color .15s;
+  }
+  .main{
+    display:flex;align-items:flex-start;gap:9px;text-align:left;background:none;border:none;
+    padding:8px 6px 8px 10px;font:inherit;color:inherit;cursor:pointer;min-width:0;
+  }
+  .main:hover{background:rgba(48,112,179,.05)}
+  .tools{display:flex;border-left:1px solid var(--line)}
+  .tool{
+    background:none;border:none;color:#B6BFCC;font-size:13px;line-height:1;padding:0 8px;
+    cursor:pointer;transition:color .15s,background .15s;
+  }
+  .tool + .tool{border-left:1px solid var(--line)}
+  .tool:hover{background:rgba(14,23,38,.05);color:var(--ink)}
+  .main:focus-visible,.tool:focus-visible{outline:2px solid var(--ss);outline-offset:-2px}
+  .cell.hasnote .tnote{color:var(--ss)}
+  .cell.skipped .tskip{color:var(--skip)}
+
+  .box{flex:none;width:15px;height:15px;margin-top:2px;border:1.5px solid var(--line);
+       border-radius:2px;background:#fff;position:relative}
+  .txt{min-width:0}
+  .code{display:block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;
+        letter-spacing:.06em;color:var(--type);font-weight:600}
+  .name{display:block;font-size:13px;line-height:1.3;margin-top:1px}
+  .sub{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+
+  .note{
+    grid-column:1 / -1;display:none;width:100%;border:none;border-top:1px dashed var(--line);
+    background:#F6F9FC;font:inherit;font-size:12.5px;color:#3F4B5C;padding:6px 10px;resize:vertical;
+    min-height:32px;font-family:inherit;
+  }
+  .note::placeholder{color:#A9B4C2}
+  .note:focus{outline:none;background:#EEF4FA}
+  .cell.noting .note{display:block}
+
+  .cell.done{background:var(--done-bg);border-color:#BFE0D9;border-left-color:var(--done)}
+  .cell.done .box{background:var(--done);border-color:var(--done)}
+  .cell.done .box::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(42deg)}
+  .cell.done .name{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+  .cell.done .note{background:#EDF6F4;border-top-color:#C9E3DD}
+
+  .cell.skipped{background:var(--skip-bg);border-color:#E2D5B7;border-left-style:dashed;
+                border-left-color:var(--skip)}
+  .cell.skipped .box{border-color:var(--skip);border-style:dashed;background:#fff}
+  .cell.skipped .box::after{content:"";position:absolute;left:1px;top:5px;width:9px;height:1.5px;
+    background:var(--skip)}
+  .cell.skipped .name{color:#8A7748;font-style:italic}
+  .cell.skipped .note{background:#FBF7EC;border-top-color:#E2D5B7;color:#6B5A32}
+
+  .examcell .name{font-style:italic;color:var(--muted)}
+  .examcell.done .name{font-style:normal}
+
+  footer{margin-top:22px;font-size:12px;color:var(--muted);text-align:center}
+
+  @media (max-width:520px){
+    body{padding:20px 12px 48px}
+    h1{font-size:26px}
+    .matrix{padding:0 14px}
+    .matrix::before,.matrix::after{width:8px}
+    .cells{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media print{
+    body{background:#fff;padding:0}
+    .bank,.mini,.tools{display:none}
+    .blatt{break-inside:avoid}
+    .cell.hasnote .note{display:block!important;border-top:1px solid #ddd}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">TUM · IN0019 · Numerisches Programmieren</div>
+    <h1>Numerisches <em>Programmieren</em></h1>
+    <div class="sub">13 Klausuren · SoSe 2010 – WiSe 2025/26 · nach Kategorie sortiert</div>
+
+    <div class="meter">
+      <div class="count"><span id="done">0</span><small> / <span id="total">0</span> Aufgaben erledigt</small></div>
+      <div class="bar"><i id="fill"></i><i id="fillSkip"></i></div>
+      <div class="split">
+        <span>Klausuren <b id="ce">0/0</b></span>
+        <span>übersprungen <b id="cs">0</b></span>
+      </div>
+    </div>
+
+    <div class="bank">
+      <span class="state" id="state"><i class="dot"></i><span id="stateTxt">Prüfe Speicher …</span></span>
+      <input id="code" spellcheck="false" aria-label="Sicherungscode">
+      <button class="mini" id="btnCopy">Code kopieren</button>
+      <button class="mini" id="btnLoad">Code laden</button>
+      <button class="mini" id="btnFile">Als Datei sichern</button>
+      <button class="mini" id="btnReset">Zurücksetzen</button>
+    </div>
+
+    <div class="legend" id="examLegend"></div>
+    <div class="hint">
+      Klick auf eine <b>Klausur</b> = alle zugehörigen Aufgaben werden mit erledigt <b>(und umgekehrt)</b> ·
+      Klick auf eine <b>Aufgabe</b> unten = einzeln erledigt ·
+      <b>✎</b> = <b>Notiz</b> auf- und zuklappen · <b>⊘</b> = <b>übersprungen</b>.
+    </div>
+  </header>
+
+  <div class="section-title">Klausuren</div>
+  <div class="matrix">
+    <section class="blatt">
+      <div class="bhead"><span class="bnum">Alle Semester</span><span class="bcount" id="examBcount"></span></div>
+      <div class="cells" id="examsGrid"></div>
+    </section>
+  </div>
+
+  <div class="section-title">Aufgaben nach Kategorie</div>
+  <div class="matrix">
+    <div id="catRoot"></div>
+  </div>
+
+  <footer id="footerLine">Aufgaben insgesamt</footer>
+</div>
+
+<script>
+const KEY = "numprog-checkliste-v1";
+const SAVED = "";
+
+/* Kategorie -> Liste von [KlausurID, Aufgabennummer] */
+/* Kategorie -> Liste von [KlausurID, Aufgabennummer, Aufgabentitel laut Klausur] */
+const CATEGORIES = [
+ ["Differentialgleichungen", [
+   ["10_SS",2,"Gewöhnliche Differentialgleichungen"],
+   ["19_WS",3,"Gewöhnliche Differentialgleichungen"],
+   ["20_WS",3,"Gewöhnliche Differentialgleichungen"],
+   ["22_SS",4,"Gewöhnliche Differentialgleichungen"],
+   ["23_SS",3,"Gewöhnliche Differentialgleichungen"],
+   ["24_SS",6,"Gewöhnliche Differentialgleichungen"],
+   ["24_WS",6,"Differentialgleichungen"],
+   ["25_SS",4,"Gewöhnliche Differentialgleichung und Quadratur"],
+   ["25_WS",6,"Differentialgleichungen"]
+ ]],
+ ["Eigenwertproblem", [
+   ["20_WS",5,"Programmieraufgabe: Potenzmethode (Power Iteration)"],
+   ["21_WS",4,"Eigenwerte"],
+   ["22_WS",4,"Vektoriteration und Nullstellen von Polynomen"],
+   ["25_SS",6,"Eigenwerte"]
+ ]],
+ ["Fixpunkte", [
+   ["10_SS",4,"Fixpunktiteration"],
+   ["21_WS",5,"Programmieraufgabe: Abstiegsverfahren für Lineare Gleichungssysteme"],
+   ["22_WS",3,"Iterative Lösung linearer Gleichungssysteme"],
+   ["23_SS",6,"Iterative Verfahren"],
+   ["23_WS",5,"Nichtlineare Gleichungssysteme"],
+   ["23_WS",6,"Iterative Verfahren"],
+   ["24_SS",5,"Iterative Methoden"],
+   ["25_SS",5,"Iterative Verfahren"],
+   ["25_WS",7,"Iterative Verfahren"]
+ ]],
+ ["Frequenzanalyse", [
+   ["19_WS",5,"Inverse Fast Fourier Transformation"],
+   ["24_SS",3,"Fourier-Transformation"]
+ ]],
+ ["Interpolation", [
+   ["10_SS",3,"Interpolation"],
+   ["21_WS",2,"Interpolation"],
+   ["22_SS",3,"Interpolation: Aitken-Neville"],
+   ["22_WS",2,"Interpolation"],
+   ["23_SS",2,"Interpolation"],
+   ["23_WS",3,"Interpolation mit radialen Basisfunktionen"],
+   ["24_WS",3,"Interpolation"],
+   ["25_SS",2,"Interpolation"],
+   ["25_WS",3,"Interpolation"]
+ ]],
+ ["Kondition", [
+   ["19_WS",1,"Gleitkommazahlen und Kondition"],
+   ["20_WS",1,"Gleitkommazahlen und Kondition"],
+   ["22_WS",1,"Gleitkommazahlen und Kondition"],
+   ["23_SS",1,"Gleitkommazahlen und Kondition"],
+   ["25_WS",2,"Maschinenzahlen und Kondition"]
+ ]],
+ ["Lineare Gleichungssysteme", [
+   ["19_WS",4,"LU-Zerlegung"],
+   ["20_WS",4,"Lineare Gleichungssysteme"],
+   ["22_SS",2,"Lineare Gleichungssysteme"],
+   ["23_SS",5,"Lineare Gleichungssysteme"],
+   ["24_WS",5,"Lineare Gleichungssysteme"],
+   ["25_WS",5,"Lineare Gleichungssysteme"]
+ ]],
+ ["Ohne Kategorie", [
+   ["10_SS",1,"Multiple Choice"],
+   ["22_SS",6,"Programmieraufgabe: Sparse Matrix"],
+   ["23_WS",2,"Multiple-Choice Grundwissen"],
+   ["24_SS",1,"Single-Choice Grundwissen"],
+   ["24_WS",1,"Single-Choice Grundwissen"],
+   ["25_SS",1,"Single-Choice Grundwissen"],
+   ["25_WS",1,"Single-Choice Grundwissen"]
+ ]],
+ ["Quadratur", [
+   ["10_SS",5,"Numerische Quadratur"],
+   ["19_WS",2,"Quadratur"],
+   ["20_WS",2,"Interpolation und Quadratur"],
+   ["21_WS",3,"Quadratur"],
+   ["22_SS",5,"Quadratur: Gauß-Lobatto Quadratur"],
+   ["22_WS",5,"Quadratur in der Wahrscheinlichkeitstheorie"],
+   ["23_SS",4,"Quadratur"],
+   ["23_WS",4,"Programmieraufgabe: Quadratur"],
+   ["24_SS",4,"Numerische Quadratur"],
+   ["24_WS",4,"Integration"],
+   ["25_WS",4,"Quadratur"]
+ ]],
+ ["Stabilität", [
+   ["21_WS",1,"Gleitkommazahlen, Kondition und Stabilität"],
+   ["22_SS",1,"Stabilität und Kondition"],
+   ["23_WS",1,"Maschinenzahlen, Kondition und Stabilität"]
+ ]],
+ ["Zahlendarstellung", [
+   ["24_SS",2,"Gleitpunktarithmetik"],
+   ["24_WS",2,"Gleitpunktarithmetik"],
+   ["25_SS",3,"Gleitkommazahlen"]
+ ]]
+];
+
+/* Klausuren in chronologischer Reihenfolge. 19_SS hat keine kategorisierten Aufgaben. */
+const EXAMS = [
+ ["10_SS","SoSe 2010"],
+ ["19_SS","SoSe 2019"],
+ ["19_WS","WiSe 2019/20"],
+ ["20_WS","WiSe 2020/21"],
+ ["21_WS","WiSe 2021/22"],
+ ["22_SS","SoSe 2022"],
+ ["22_WS","WiSe 2022/23"],
+ ["23_SS","SoSe 2023"],
+ ["23_WS","WiSe 2023/24"],
+ ["24_SS","SoSe 2024"],
+ ["24_WS","WiSe 2024/25"],
+ ["25_SS","SoSe 2025"],
+ ["25_WS","WiSe 2025/26"]
+];
+
+const COLOR = {
+  "Differentialgleichungen":"#3070B3",
+  "Eigenwertproblem":"#9C3A6B",
+  "Fixpunkte":"#B0812A",
+  "Frequenzanalyse":"#2E8B57",
+  "Interpolation":"#6A4C93",
+  "Kondition":"#C0392B",
+  "Lineare Gleichungssysteme":"#1F7A8C",
+  "Ohne Kategorie":"#7A7A7A",
+  "Quadratur":"#B5651D",
+  "Stabilität":"#4B6584",
+  "Zahlendarstellung":"#556B2F"
+};
+
+const EXAM_LABEL = {};
+const EXAM_INDEX = {};
+EXAMS.forEach(function(e, i){ EXAM_LABEL[e[0]] = e[1]; EXAM_INDEX[e[0]] = i; });
+
+const exercisesByExam = {};
+EXAMS.forEach(function(e){ exercisesByExam[e[0]] = []; });
+const ALL_EXERCISES = [];
+CATEGORIES.forEach(function(cat){
+  cat[1].forEach(function(ex){
+    const id = ex[0] + "_A" + ex[1];
+    exercisesByExam[ex[0]].push(id);
+    ALL_EXERCISES.push(id);
+  });
+});
+const TOTAL = ALL_EXERCISES.length;
+
+/* d = erledigt · s = übersprungen · n = Notiz (unabhängig vom Zustand) */
+let model = {d:{}, s:{}, n:{}};
+let open = {};          /* nur Ansicht: welche Notizfelder sind aufgeklappt */
+let backend = "none";
+
+function b64enc(str){ return btoa(unescape(encodeURIComponent(str))).replace(/=+$/, ""); }
+function b64dec(str){ return decodeURIComponent(escape(atob(str))); }
+
+function encode(){ return b64enc(JSON.stringify(model)); }
+
+function decode(code){
+  const clean = code.trim().replace(/[^A-Za-z0-9+/=]/g, "");
+  const raw = b64dec(clean);
+  const o = JSON.parse(raw);
+  return {d: o.d || {}, s: o.s || {}, n: o.n || {}};
+}
+
+function isEmpty(m){
+  return !Object.keys(m.d).length && !Object.keys(m.s).length && !Object.keys(m.n).length;
+}
+
+async function save(){
+  const code = encode();
+  document.getElementById("code").value = code;
+  try { history.replaceState(null, "", "#" + code); } catch(e){ try { location.hash = code; } catch(e2){} }
+  let ok = false;
+  try { if(window.storage){ await window.storage.set(KEY, code); ok = true; backend = "app"; } } catch(e){}
+  if(!ok){ try { localStorage.setItem(KEY, code); ok = true; backend = "browser"; } catch(e){} }
+  if(!ok) backend = "none";
+  showState();
+}
+
+async function load(){
+  const fromHash = location.hash.slice(1);
+  if(fromHash){ try { model = decode(fromHash); backend = "link"; } catch(e){} }
+  if(isEmpty(model)){
+    try {
+      if(window.storage){
+        const r = await window.storage.get(KEY);
+        if(r && r.value){ model = decode(r.value); backend = "app"; return; }
+      }
+    } catch(e){}
+    try {
+      const v = localStorage.getItem(KEY);
+      if(v){ model = decode(v); backend = "browser"; return; }
+    } catch(e){}
+  }
+  if(isEmpty(model) && SAVED){ try { model = decode(SAVED); backend = "datei"; } catch(e){} }
+  try {
+    localStorage.setItem("__probe", "1"); localStorage.removeItem("__probe");
+    if(backend === "none" || backend === "datei" || backend === "link") backend = "browser";
+  } catch(e){ if(backend !== "app") backend = "none"; }
+}
+
+function showState(){
+  const el = document.getElementById("state");
+  const txt = document.getElementById("stateTxt");
+  el.className = "state";
+  if(backend === "app" || backend === "browser"){
+    el.classList.add("ok"); txt.textContent = "Automatisch gespeichert";
+  } else {
+    el.classList.add("warn"); txt.textContent = "Kein Speicher — Datei sichern";
+  }
+}
+
+function isExamDone(examId){
+  const list = exercisesByExam[examId] || [];
+  if(list.length === 0) return !!model.d[examId];
+  return list.every(function(id){ return !!model.d[id]; });
+}
+
+function toggleExam(examId){
+  const list = exercisesByExam[examId] || [];
+  if(list.length === 0){
+    if(model.d[examId]){ delete model.d[examId]; }
+    else { model.d[examId] = true; delete model.s[examId]; }
+  } else {
+    const nowDone = !isExamDone(examId);
+    list.forEach(function(id){
+      if(nowDone){ model.d[id] = true; delete model.s[id]; }
+      else { delete model.d[id]; }
+    });
+  }
+  paint(); save();
+}
+
+function toggleExamSkip(examId){
+  if(model.s[examId]){ delete model.s[examId]; }
+  else { model.s[examId] = true; delete model.d[examId]; }
+  paint(); save();
+}
+
+function toggleExercise(id){
+  if(model.d[id]){ delete model.d[id]; }
+  else { model.d[id] = true; delete model.s[id]; }
+  paint(); save();
+}
+
+function toggleExerciseSkip(id){
+  if(model.s[id]){ delete model.s[id]; }
+  else { model.s[id] = true; delete model.d[id]; }
+  paint(); save();
+}
+
+function markNote(cell, id){
+  cell.classList.toggle("hasnote", !!model.n[id]);
+  cell.classList.toggle("noting", !!open[id] || !!model.n[id]);
+}
+
+function buildCell(id, extraClass, codeText, nameText, colorVal, onMain, onSkip, subText){
+  const cell = document.createElement("div");
+  cell.className = "cell " + extraClass;
+  cell.dataset.id = id;
+  cell.style.setProperty("--type", colorVal);
+
+  const main = document.createElement("button");
+  main.className = "main";
+  main.type = "button";
+  main.innerHTML = '<span class="box"></span><span class="txt">' +
+                   '<span class="code"></span><span class="name"></span><span class="sub"></span></span>';
+  main.querySelector(".code").textContent = codeText;
+  main.querySelector(".name").textContent = nameText;
+  const subEl = main.querySelector(".sub");
+  if(subText){ subEl.textContent = subText; } else { subEl.remove(); }
+  main.addEventListener("click", onMain);
+
+  const tools = document.createElement("div");
+  tools.className = "tools";
+
+  const tnote = document.createElement("button");
+  tnote.className = "tool tnote";
+  tnote.type = "button";
+  tnote.textContent = "✎";
+  tnote.title = "Notiz";
+  tnote.setAttribute("aria-label", "Notiz zu " + codeText);
+  tnote.addEventListener("click", function(){
+    open[id] = !open[id];
+    paint();
+    if(open[id]) cell.querySelector(".note").focus();
+  });
+
+  const tskip = document.createElement("button");
+  tskip.className = "tool tskip";
+  tskip.type = "button";
+  tskip.textContent = "⊘";
+  tskip.title = "Übersprungen";
+  tskip.setAttribute("aria-label", codeText + " überspringen");
+  tskip.addEventListener("click", onSkip);
+
+  tools.appendChild(tnote);
+  tools.appendChild(tskip);
+
+  const note = document.createElement("textarea");
+  note.className = "note";
+  note.rows = 1;
+  note.placeholder = "Notiz …";
+  note.setAttribute("aria-label", "Notiz zu " + codeText);
+  note.addEventListener("input", function(){
+    if(note.value) model.n[id] = note.value; else delete model.n[id];
+    markNote(cell, id);
+    counters();
+  });
+  note.addEventListener("change", save);
+  note.addEventListener("blur", function(){ open[id] = false; paint(); save(); });
+
+  cell.appendChild(main);
+  cell.appendChild(tools);
+  cell.appendChild(note);
+  return cell;
+}
+
+function render(){
+  const examsGrid = document.getElementById("examsGrid");
+  examsGrid.innerHTML = "";
+  EXAMS.forEach(function(e){
+    const examId = e[0], label = e[1];
+    const codeText = examId.replace("_", " ");
+    const colorVal = examId.slice(-2) === "SS" ? "var(--ss)" : "var(--ws)";
+    const cell = buildCell(
+      examId, "examcell", codeText, label, colorVal,
+      function(){ toggleExam(examId); },
+      function(){ toggleExamSkip(examId); }
+    );
+    examsGrid.appendChild(cell);
+  });
+
+  const catRoot = document.getElementById("catRoot");
+  catRoot.innerHTML = "";
+  CATEGORIES.forEach(function(cat){
+    const name = cat[0], list = cat[1];
+    const sorted = list.slice().sort(function(a, b){
+      return EXAM_INDEX[a[0]] - EXAM_INDEX[b[0]] || a[1] - b[1];
+    });
+
+    const sec = document.createElement("section");
+    sec.className = "blatt";
+    const head = document.createElement("div");
+    head.className = "bhead";
+    head.innerHTML = '<span class="bnum">' + name + '</span><span class="bcount"></span>';
+    sec.appendChild(head);
+
+    const grid = document.createElement("div");
+    grid.className = "cells";
+    sorted.forEach(function(ex){
+      const examId = ex[0], num = ex[1], title = ex[2], id = examId + "_A" + num;
+      const codeText = "A" + num + " · " + examId.replace("_", " ");
+      const cell = buildCell(
+        id, "exercisecell", codeText, title, COLOR[name],
+        function(){ toggleExercise(id); },
+        function(){ toggleExerciseSkip(id); }
+      );
+      grid.appendChild(cell);
+    });
+    sec.appendChild(grid);
+    catRoot.appendChild(sec);
+  });
+
+  const examLegend = document.getElementById("examLegend");
+  examLegend.innerHTML =
+    '<span><i class="dot" style="background:var(--ss)"></i>Sommersemester</span>' +
+    '<span><i class="dot" style="background:var(--ws)"></i>Wintersemester</span>';
+
+  document.getElementById("total").textContent = TOTAL;
+  document.getElementById("footerLine").textContent =
+    TOTAL + " Aufgaben insgesamt · " + EXAMS.length + " Klausuren · " + CATEGORIES.length + " Kategorien";
+
+  paint();
+}
+
+function paint(){
+  document.querySelectorAll(".examcell").forEach(function(c){
+    const id = c.dataset.id;
+    const d = isExamDone(id);
+    const s = !!model.s[id] && !d;
+    c.classList.toggle("done", d);
+    c.classList.toggle("skipped", s);
+    c.querySelector(".main").setAttribute("aria-pressed", d ? "true" : "false");
+    c.querySelector(".tskip").setAttribute("aria-pressed", s ? "true" : "false");
+    const list = exercisesByExam[id] || [];
+    const sub = c.querySelector(".name");
+    if(list.length){
+      const n = list.filter(function(x){ return !!model.d[x]; }).length;
+      sub.textContent = EXAM_LABEL[id] + " — " + n + "/" + list.length + " Aufgaben";
+    } else {
+      sub.textContent = EXAM_LABEL[id] + " — keine Aufgaben hinterlegt";
+    }
+    const note = c.querySelector(".note");
+    const val = model.n[id] || "";
+    if(note.value !== val && document.activeElement !== note) note.value = val;
+    markNote(c, id);
+  });
+
+  document.querySelectorAll(".exercisecell").forEach(function(c){
+    const id = c.dataset.id;
+    const d = !!model.d[id], s = !!model.s[id] && !d;
+    c.classList.toggle("done", d);
+    c.classList.toggle("skipped", s);
+    c.querySelector(".main").setAttribute("aria-pressed", d ? "true" : "false");
+    c.querySelector(".tskip").setAttribute("aria-pressed", s ? "true" : "false");
+    const note = c.querySelector(".note");
+    const val = model.n[id] || "";
+    if(note.value !== val && document.activeElement !== note) note.value = val;
+    markNote(c, id);
+  });
+
+  counters();
+  document.getElementById("code").value = encode();
+}
+
+function counters(){
+  let doneN = 0, skipped = 0;
+  ALL_EXERCISES.forEach(function(id){
+    if(model.d[id]) doneN++;
+    else if(model.s[id]) skipped++;
+  });
+  document.getElementById("done").textContent = doneN;
+  document.getElementById("fill").style.width = (doneN / TOTAL * 100) + "%";
+  document.getElementById("fillSkip").style.width = (skipped / TOTAL * 100) + "%";
+  document.getElementById("cs").textContent = skipped;
+
+  const examsDone = EXAMS.filter(function(e){ return isExamDone(e[0]); }).length;
+  document.getElementById("ce").textContent = examsDone + "/" + EXAMS.length;
+  document.getElementById("examBcount").textContent = examsDone + " / " + EXAMS.length;
+
+  document.querySelectorAll("#catRoot .blatt").forEach(function(sec){
+    const cells = sec.querySelectorAll(".exercisecell");
+    let n = 0, sk = 0;
+    cells.forEach(function(c){
+      const id = c.dataset.id;
+      if(model.d[id]) n++;
+      else if(model.s[id]) sk++;
+    });
+    sec.querySelector(".bcount").textContent = (n + sk) + " / " + cells.length + (sk ? "  ⊘ " + sk : "");
+    sec.classList.toggle("full", n + sk === cells.length);
+  });
+}
+
+document.getElementById("btnReset").addEventListener("click", function(){
+  model = {d:{}, s:{}, n:{}}; open = {}; paint(); save();
+});
+document.getElementById("btnCopy").addEventListener("click", function(){
+  const inp = document.getElementById("code");
+  inp.select();
+  try { navigator.clipboard.writeText(inp.value); } catch(e){ try { document.execCommand("copy"); } catch(e2){} }
+  const b = document.getElementById("btnCopy");
+  b.textContent = "Kopiert";
+  setTimeout(function(){ b.textContent = "Code kopieren"; }, 1400);
+});
+document.getElementById("btnLoad").addEventListener("click", function(){
+  try { model = decode(document.getElementById("code").value); open = {}; paint(); save(); }
+  catch(e){ document.getElementById("stateTxt").textContent = "Code nicht lesbar"; }
+});
+document.getElementById("btnFile").addEventListener("click", function(){
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelector("#examsGrid").innerHTML = "";
+  clone.querySelector("#catRoot").innerHTML = "";
+  clone.querySelector("#code").setAttribute("value", "");
+  let html = "<!doctype html>\n" + clone.outerHTML;
+  html = html.replace(new RegExp('const SAVED = "[^"]*";'), 'const SAVED = "' + encode() + '";');
+  const url = URL.createObjectURL(new Blob([html], {type:"text/html"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = "numprog-checkliste.html"; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  const b = document.getElementById("btnFile");
+  b.textContent = "Datei erstellt";
+  setTimeout(function(){ b.textContent = "Als Datei sichern"; }, 1800);
+});
+
+load().then(function(){ render(); showState(); });
+</script>
